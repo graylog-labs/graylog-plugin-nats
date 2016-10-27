@@ -19,9 +19,10 @@ package org.graylog.plugins.nats.transport;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.EventBus;
-import io.nats.client.Connection;
-import io.nats.client.ConnectionFactory;
+import io.nats.stan.Connection;
+import io.nats.stan.ConnectionFactory;
 import org.graylog.plugins.nats.config.NatsConfig;
+import org.graylog.plugins.nats.config.NatsStreamingConfig;
 import org.graylog2.plugin.LocalMetricRegistry;
 import org.graylog2.plugin.configuration.Configuration;
 import org.graylog2.plugin.inputs.MessageInput;
@@ -40,13 +41,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class NatsTransportIT {
+public class NatsStreamingTransportIT {
     @Rule
     public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    private static final String NATS_HOST = System.getProperty("nats.host", ConnectionFactory.DEFAULT_HOST);
-    private static final int NATS_PORT = Integer.getInteger("nats.port", ConnectionFactory.DEFAULT_PORT);
+    private static final String NATS_HOST = System.getProperty("nats.host", "localhost");
+    private static final int NATS_PORT = Integer.getInteger("nats.port", 4223);
     private static final String NATS_URL = "nats://" + NATS_HOST + ":" + NATS_PORT;
+    private static final String NATS_CLUSTER_ID = "test-cluster";
     private static final String CHANNELS = "graylog";
 
     private EventBus eventBus;
@@ -63,20 +65,23 @@ public class NatsTransportIT {
         final Configuration configuration = new Configuration(
                 ImmutableMap.of(
                         NatsConfig.CK_SERVER_URIS, NATS_URL,
-                        NatsConfig.CK_CHANNELS, CHANNELS
+                        NatsConfig.CK_CHANNELS, CHANNELS,
+                        NatsStreamingConfig.CK_CLUSTER_ID, NATS_CLUSTER_ID,
+                        NatsStreamingConfig.CK_CLIENT_ID, "NatsStreamingTransport-consumer"
                 )
         );
 
-        final NatsTransport natsTransport = new NatsTransport(configuration, eventBus, localMetricRegistry);
+        final NatsStreamingTransport natsTransport = new NatsStreamingTransport(configuration, eventBus, localMetricRegistry);
         final MessageInput messageInput = mock(MessageInput.class);
         natsTransport.launch(messageInput);
 
-        final ConnectionFactory cf = new ConnectionFactory(NATS_URL);
+        final ConnectionFactory cf = new ConnectionFactory(NATS_CLUSTER_ID, "NatsStreamingTransport-publisher");
+        cf.setNatsUrl(NATS_URL);
         try (Connection nc = cf.createConnection()) {
             nc.publish(CHANNELS, "TEST".getBytes(StandardCharsets.UTF_8));
         }
 
-        Thread.sleep(100L);
+        Thread.sleep(250L);
 
         verify(messageInput, times(1)).processRawMessage(any(RawMessage.class));
 

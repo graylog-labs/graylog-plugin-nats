@@ -17,26 +17,20 @@
  */
 package org.graylog.plugins.nats;
 
-import com.google.auto.service.AutoService;
-import com.google.common.collect.ImmutableSet;
-import org.graylog2.plugin.Plugin;
-import org.graylog2.plugin.PluginMetaData;
+import org.graylog.plugins.nats.input.GelfNatsStreamingInput;
+import org.graylog.plugins.nats.input.RawNatsStreamingInput;
+import org.graylog.plugins.nats.input.SyslogNatsStreamingInput;
+import org.graylog.plugins.nats.output.GelfNatsStreamingOutput;
+import org.graylog.plugins.nats.transport.NatsStreamingTransport;
 import org.graylog2.plugin.PluginModule;
 
-import java.util.Collection;
-
-@AutoService(Plugin.class)
-public class NatsInputPlugin implements Plugin {
+public class NatsStreamingInputPluginModule extends PluginModule {
     @Override
-    public PluginMetaData metadata() {
-        return new NatsInputPluginMetaData();
-    }
-
-    @Override
-    public Collection<PluginModule> modules() {
-        return ImmutableSet.of(
-                new NatsInputPluginModule(),
-                new NatsStreamingInputPluginModule()
-        );
+    protected void configure() {
+        addTransport("nats-streaming", NatsStreamingTransport.class);
+        addMessageInput(GelfNatsStreamingInput.class);
+        addMessageInput(RawNatsStreamingInput.class);
+        addMessageInput(SyslogNatsStreamingInput.class);
+        addMessageOutput(GelfNatsStreamingOutput.class);
     }
 }
