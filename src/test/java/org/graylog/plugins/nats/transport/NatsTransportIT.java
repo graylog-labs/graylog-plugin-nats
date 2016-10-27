@@ -34,7 +34,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -76,10 +78,11 @@ public class NatsTransportIT {
             nc.publish(CHANNELS, "TEST".getBytes(StandardCharsets.UTF_8));
         }
 
-        Thread.sleep(100L);
-
-        verify(messageInput, times(1)).processRawMessage(any(RawMessage.class));
-
+        await()
+                .atMost(5L, TimeUnit.SECONDS)
+                .catchUncaughtExceptions()
+                .until(() -> verify(messageInput, times(1)).processRawMessage(any(RawMessage.class)));
+        
         natsTransport.stop();
     }
 }
