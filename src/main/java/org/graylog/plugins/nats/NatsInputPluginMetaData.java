@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.Set;
 
 public class NatsInputPluginMetaData implements PluginMetaData {
+    private static final String PLUGIN_PROPERTIES = "org.graylog.plugins.nats/graylog-plugin.properties";
+
     @Override
     public String getUniqueId() {
         return NatsInputPlugin.class.getCanonicalName();
@@ -48,7 +50,7 @@ public class NatsInputPluginMetaData implements PluginMetaData {
 
     @Override
     public Version getVersion() {
-        return Version.from(1, 0, 0);
+        return Version.fromPluginProperties(this.getClass(), PLUGIN_PROPERTIES, "version", Version.from(0, 0, 0, "unknown"));
     }
 
     @Override
@@ -58,7 +60,7 @@ public class NatsInputPluginMetaData implements PluginMetaData {
 
     @Override
     public Version getRequiredVersion() {
-        return Version.from(2, 0, 0);
+        return Version.fromPluginProperties(this.getClass(), PLUGIN_PROPERTIES, "graylog.version", Version.CURRENT_CLASSPATH);
     }
 
     @Override

@@ -33,7 +33,7 @@
         <maven.install.skip>true</maven.install.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.site.skip>true</maven.site.skip>
-        <graylog2.version>2.1.0</graylog2.version>
+        <graylog.version>2.1.0</graylog.version>
         <graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
 
         <nats.image>nats:0.9.4</nats.image>
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.graylog2</groupId>
             <artifactId>graylog2-server</artifactId>
-            <version>${graylog2.version}</version>
+            <version>${graylog.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -94,6 +94,12 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -104,6 +110,18 @@
                         <annotationProcessor>com.google.auto.service.processor.AutoServiceProcessor
                         </annotationProcessor>
                     </annotationProcessors>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Graylog-Plugin-Properties-Path>org.graylog.plugins.nats</Graylog-Plugin-Properties-Path>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
             </plugin>
             <plugin>
