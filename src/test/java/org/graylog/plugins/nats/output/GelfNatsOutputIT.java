@@ -108,7 +108,7 @@ public class GelfNatsOutputIT {
 
             output.write(message);
 
-            await().atMost(5, TimeUnit.SECONDS).until(() -> !receivedMessages.isEmpty());
+            await().atMost(10L, TimeUnit.SECONDS).until(() -> !receivedMessages.isEmpty());
         }
 
         final byte[] expectedMessage = ("{" +

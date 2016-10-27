@@ -79,10 +79,10 @@ public class NatsTransportIT {
         }
 
         await()
-                .atMost(5L, TimeUnit.SECONDS)
+                .atMost(10L, TimeUnit.SECONDS)
                 .catchUncaughtExceptions()
                 .until(() -> verify(messageInput, times(1)).processRawMessage(any(RawMessage.class)));
-        
+
         natsTransport.stop();
     }
 }
