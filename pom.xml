@@ -242,6 +242,7 @@
                 <version>0.16.9</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <showLogs>true</showLogs>
                     <images>
                         <image>
                             <alias>nats</alias>
@@ -262,6 +263,10 @@
                                     <time>10000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
+                                <cmd>--debug</cmd>
+                                <log>
+                                    <prefix>NATS</prefix>
+                                </log>
                             </run>
                         </image>
                         <image>
@@ -283,7 +288,10 @@
                                     <time>10000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
-                                <cmd>-p 4223 -m 8223</cmd>
+                                <cmd>-p 4223 -m 8223 --debug</cmd>
+                                <log>
+                                    <prefix>STAN</prefix>
+                                </log>
                             </run>
                         </image>
                     </images>

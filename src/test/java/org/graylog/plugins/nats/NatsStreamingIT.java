@@ -21,7 +21,6 @@ import io.nats.stan.Connection;
 import io.nats.stan.ConnectionFactory;
 import io.nats.stan.Message;
 import io.nats.stan.Subscription;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -31,10 +30,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore
 public class NatsStreamingIT {
-    private static final String NATS_HOST = System.getProperty("nats.host", "localhost");
-    private static final int NATS_PORT = Integer.getInteger("nats.port", 4222);
+    private static final String NATS_HOST = System.getProperty("nats-streaming.host", "localhost");
+    private static final int NATS_PORT = Integer.getInteger("nats-streaming.port", 4223);
     private static final String NATS_URL = "nats://" + NATS_HOST + ":" + NATS_PORT;
 
     private static final String CLUSTER_ID = "clusterID";

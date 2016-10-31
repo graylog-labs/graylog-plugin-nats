@@ -53,8 +53,8 @@ public class GelfNatsStreamingOutputIT {
     @Rule
     public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    private static final String NATS_HOST = System.getProperty("nats.host", "localhost");
-    private static final int NATS_PORT = Integer.getInteger("nats.port", 4223);
+    private static final String NATS_HOST = System.getProperty("nats-streaming.host", "localhost");
+    private static final int NATS_PORT = Integer.getInteger("nats-streaming.port", 4223);
     private static final String NATS_URL = "nats://" + NATS_HOST + ":" + NATS_PORT;
     private static final String NATS_CLUSTER_ID = "test-cluster";
     private static final String CHANNELS = "graylog";
