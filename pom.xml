@@ -320,6 +320,8 @@
                     <systemPropertyVariables>
                         <nats.host>${nats.host}</nats.host>
                         <nats.port>${nats.port}</nats.port>
+                        <nats-streaming.host>${nats-streaming.host}</nats-streaming.host>
+                        <nats-streaming.port>${nats-streaming.port}</nats-streaming.port>
                     </systemPropertyVariables>
                 </configuration>
                 <executions>
