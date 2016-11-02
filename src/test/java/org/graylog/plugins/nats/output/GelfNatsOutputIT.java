@@ -67,7 +67,8 @@ public class GelfNatsOutputIT extends BaseNatsTest {
         final Configuration configuration = new Configuration(
                 ImmutableMap.of(
                         NatsConfig.CK_SERVER_URIS, NatsConstants.URL,
-                        NatsConfig.CK_CHANNELS, CHANNELS
+                        NatsConfig.CK_CHANNELS, CHANNELS,
+                        NatsConfig.CK_CONNECTION_NAME, "GelfNatsOutputIT-publisher"
                 )
 
         );
@@ -84,7 +85,7 @@ public class GelfNatsOutputIT extends BaseNatsTest {
     public void publishMessage() throws Exception {
         final List<byte[]> receivedMessages = new CopyOnWriteArrayList<>();
         final ConnectionFactory cf = new ConnectionFactory(NatsConstants.URL);
-        cf.setConnectionName("GelfNatsOutputIT");
+        cf.setConnectionName("GelfNatsOutputIT-consumer");
         try (Connection nc = cf.createConnection()) {
             nc.subscribe(CHANNELS, msg -> receivedMessages.add(msg.getData()));
 

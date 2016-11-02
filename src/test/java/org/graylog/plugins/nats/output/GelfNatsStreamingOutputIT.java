@@ -70,8 +70,9 @@ public class GelfNatsStreamingOutputIT extends BaseNatsStreamingTest {
                 ImmutableMap.of(
                         NatsConfig.CK_SERVER_URIS, NatsConstants.URL,
                         NatsConfig.CK_CHANNELS, CHANNELS,
+                        NatsConfig.CK_CONNECTION_NAME, "GelfNatsStreamingOutputIT-publisher",
                         NatsStreamingConfig.CK_CLUSTER_ID, NatsConstants.CLUSTER_ID,
-                        NatsStreamingConfig.CK_CLIENT_ID, "GelfNatsStreamingOutput-publisher"
+                        NatsStreamingConfig.CK_CLIENT_ID, "GelfNatsStreamingOutputIT-publisher"
                 )
 
         );
@@ -87,7 +88,7 @@ public class GelfNatsStreamingOutputIT extends BaseNatsStreamingTest {
     @Test
     public void publishMessage() throws Exception {
         final List<byte[]> receivedMessages = new CopyOnWriteArrayList<>();
-        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.CLUSTER_ID, "GelfNatsStreamingOutput-consumer");
+        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.CLUSTER_ID, "GelfNatsStreamingOutputIT-consumer");
         cf.setNatsUrl(NatsConstants.URL);
         cf.setConnectTimeout(Duration.ofSeconds(5L));
 

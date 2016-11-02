@@ -58,13 +58,14 @@ public class NatsTransportIT extends BaseNatsTest {
         final Configuration configuration = new Configuration(
                 ImmutableMap.of(
                         NatsConfig.CK_SERVER_URIS, NatsConstants.URL,
-                        NatsConfig.CK_CHANNELS, CHANNELS
+                        NatsConfig.CK_CHANNELS, CHANNELS,
+                        NatsConfig.CK_CONNECTION_NAME, "NatsTransportIT-consumer"
                 )
         );
 
         final MessageInput messageInput = mock(MessageInput.class);
         final ConnectionFactory cf = new ConnectionFactory(NatsConstants.URL);
-        cf.setConnectionName("NatsTransportIT");
+        cf.setConnectionName("NatsTransportIT-publisher");
 
         try (final NatsTransport natsTransport = new NatsTransport(configuration, eventBus, localMetricRegistry);
              final Connection nc = cf.createConnection()

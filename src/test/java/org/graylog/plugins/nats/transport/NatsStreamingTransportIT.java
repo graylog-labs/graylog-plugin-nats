@@ -60,13 +60,14 @@ public class NatsStreamingTransportIT extends BaseNatsStreamingTest {
                 ImmutableMap.of(
                         NatsConfig.CK_SERVER_URIS, NatsConstants.URL,
                         NatsConfig.CK_CHANNELS, CHANNELS,
+                        NatsConfig.CK_CONNECTION_NAME, "NatsStreamingTransportIT-consumer",
                         NatsStreamingConfig.CK_CLUSTER_ID, NatsConstants.CLUSTER_ID,
-                        NatsStreamingConfig.CK_CLIENT_ID, "NatsStreamingTransport-consumer"
+                        NatsStreamingConfig.CK_CLIENT_ID, "NatsStreamingTransportIT-consumer"
                 )
         );
 
         final MessageInput messageInput = mock(MessageInput.class);
-        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.CLUSTER_ID, "NatsStreamingTransport-publisher");
+        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.CLUSTER_ID, "NatsStreamingTransportIT-publisher");
         cf.setNatsUrl(NatsConstants.URL);
 
         try (final NatsStreamingTransport natsTransport = new NatsStreamingTransport(configuration, eventBus, localMetricRegistry);
