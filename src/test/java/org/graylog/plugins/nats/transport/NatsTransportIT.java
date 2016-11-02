@@ -63,6 +63,7 @@ public class NatsTransportIT {
 
         final MessageInput messageInput = mock(MessageInput.class);
         final ConnectionFactory cf = new ConnectionFactory(NatsConstants.URL);
+        cf.setConnectionName("NatsTransportIT");
 
         try (final NatsTransport natsTransport = new NatsTransport(configuration, eventBus, localMetricRegistry);
              final Connection nc = cf.createConnection()

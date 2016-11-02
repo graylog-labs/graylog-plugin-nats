@@ -83,6 +83,7 @@ public class GelfNatsOutputIT {
     public void publishMessage() throws Exception {
         final List<byte[]> receivedMessages = new CopyOnWriteArrayList<>();
         final ConnectionFactory cf = new ConnectionFactory(NatsConstants.URL);
+        cf.setConnectionName("GelfNatsOutputIT");
         try (Connection nc = cf.createConnection()) {
             nc.subscribe(CHANNELS, msg -> receivedMessages.add(msg.getData()));
 
