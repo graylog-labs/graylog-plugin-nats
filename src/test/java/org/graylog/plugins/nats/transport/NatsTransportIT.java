@@ -41,7 +41,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class NatsTransportIT {
-    private static final String CHANNELS = "graylog";
+    private static final String CHANNELS = "NatsTransportIT";
 
     private EventBus eventBus;
     private LocalMetricRegistry localMetricRegistry;
@@ -61,20 +61,19 @@ public class NatsTransportIT {
                 )
         );
 
-        final NatsTransport natsTransport = new NatsTransport(configuration, eventBus, localMetricRegistry);
         final MessageInput messageInput = mock(MessageInput.class);
-        natsTransport.launch(messageInput);
-
         final ConnectionFactory cf = new ConnectionFactory(NatsConstants.URL);
-        try (Connection nc = cf.createConnection()) {
+
+        try (final NatsTransport natsTransport = new NatsTransport(configuration, eventBus, localMetricRegistry);
+             final Connection nc = cf.createConnection()
+        ) {
+            natsTransport.launch(messageInput);
             nc.publish(CHANNELS, "TEST".getBytes(StandardCharsets.UTF_8));
+
+            await()
+                    .atMost(10L, TimeUnit.SECONDS)
+                    .catchUncaughtExceptions()
+                    .until(() -> verify(messageInput, times(1)).processRawMessage(any(RawMessage.class)));
         }
-
-        await()
-                .atMost(10L, TimeUnit.SECONDS)
-                .catchUncaughtExceptions()
-                .until(() -> verify(messageInput, times(1)).processRawMessage(any(RawMessage.class)));
-
-        natsTransport.stop();
     }
 }

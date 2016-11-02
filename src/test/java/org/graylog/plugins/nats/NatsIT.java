@@ -30,6 +30,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class NatsIT {
+
+    private static final String CHANNEL = "NatsIT";
+
     @Test
     public void basicSubscriptionIsWorking() throws Exception {
         final CountDownLatch messageReceived = new CountDownLatch(1);
@@ -37,12 +40,12 @@ public class NatsIT {
         final AtomicReference<Message> messageReference = new AtomicReference<>();
         final byte[] messagePayload = "Hello World".getBytes(StandardCharsets.UTF_8);
         try (Connection nc = cf.createConnection()) {
-            nc.subscribe("foo", m -> {
+            nc.subscribe(CHANNEL, m -> {
                 messageReference.set(m);
                 messageReceived.countDown();
             });
 
-            nc.publish("foo", messagePayload);
+            nc.publish(CHANNEL, messagePayload);
 
             messageReceived.await(1L, TimeUnit.SECONDS);
         }

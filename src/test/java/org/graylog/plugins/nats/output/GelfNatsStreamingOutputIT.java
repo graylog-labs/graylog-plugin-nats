@@ -54,7 +54,7 @@ public class GelfNatsStreamingOutputIT {
     @Rule
     public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    private static final String CHANNELS = "graylog";
+    private static final String CHANNELS = "GelfNatsStreamingOutputIT";
 
     @Mock
     private NodeId nodeId;

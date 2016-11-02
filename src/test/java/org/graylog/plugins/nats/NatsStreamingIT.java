@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class NatsStreamingIT {
     private static final String CLIENT_ID = "NatsStreamingIT-client";
+    private static final String CHANNEL = "NatsStreamingIT";
 
     @Test
     public void basicSubscriptionIsWorking() throws Exception {
@@ -42,12 +43,12 @@ public class NatsStreamingIT {
         final byte[] messagePayload = "Hello World".getBytes(StandardCharsets.UTF_8);
         try (
                 final Connection sc = cf.createConnection();
-                final Subscription sub = sc.subscribe("foo", m -> {
+                final Subscription sub = sc.subscribe(CHANNEL, m -> {
                     messageReference.set(m);
                     messageReceived.countDown();
                 })
         ) {
-            sc.publish("foo", messagePayload);
+            sc.publish(CHANNEL, messagePayload);
 
             messageReceived.await(1L, TimeUnit.SECONDS);
         }

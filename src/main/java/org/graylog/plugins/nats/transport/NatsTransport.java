@@ -33,10 +33,12 @@ import org.graylog2.plugin.inputs.transports.Transport;
 import org.graylog2.plugin.journal.RawMessage;
 
 import javax.inject.Inject;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class NatsTransport extends AbstractNatsTransport {
+public class NatsTransport extends AbstractNatsTransport implements Closeable {
     private final Set<Subscription> subscriptions = new HashSet<>();
 
     @Inject
@@ -64,6 +66,11 @@ public class NatsTransport extends AbstractNatsTransport {
         subscriptions.forEach(Subscription::close);
 
         super.doStop();
+    }
+
+    @Override
+    public void close() throws IOException {
+        stop();
     }
 
     @FactoryClass
