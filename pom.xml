@@ -36,9 +36,6 @@
         <graylog.version>2.1.0</graylog.version>
         <graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
 
-        <nats.image>nats:0.9.4</nats.image>
-        <nats.client.port>4222</nats.client.port>
-        <nats.monitor.port>8222</nats.monitor.port>
         <nats-streaming.image>nats-streaming:0.3.0</nats-streaming.image>
         <nats-streaming.client.port>4223</nats-streaming.client.port>
         <nats-streaming.monitor.port>8223</nats-streaming.monitor.port>
@@ -245,31 +242,6 @@
                     <showLogs>true</showLogs>
                     <images>
                         <image>
-                            <alias>nats</alias>
-                            <name>${nats.image}</name>
-                            <run>
-                                <ports>
-                                    <port>${nats.host}:${nats.client.port}:4222</port>
-                                    <port>${nats.host}:${nats.monitor.port}:8222</port>
-                                </ports>
-                                <wait>
-                                    <!-- The plugin waits until this URL is reachable via HTTP ... -->
-                                    <log>Server startup</log>
-                                    <http>
-                                        <url>http://${nats.host}:${nats.monitor.port}/</url>
-                                        <method>GET</method>
-                                        <status>200</status>
-                                    </http>
-                                    <time>10000</time>
-                                    <shutdown>500</shutdown>
-                                </wait>
-                                <cmd>--debug</cmd>
-                                <log>
-                                    <prefix>NATS</prefix>
-                                </log>
-                            </run>
-                        </image>
-                        <image>
                             <alias>nats-streaming</alias>
                             <name>${nats-streaming.image}</name>
                             <run>
@@ -318,8 +290,6 @@
                 <version>2.19.1</version>
                 <configuration>
                     <systemPropertyVariables>
-                        <nats.host>${nats.host}</nats.host>
-                        <nats.port>${nats.port}</nats.port>
                         <nats-streaming.host>${nats-streaming.host}</nats-streaming.host>
                         <nats-streaming.port>${nats-streaming.port}</nats-streaming.port>
                     </systemPropertyVariables>

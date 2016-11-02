@@ -29,6 +29,7 @@ import org.graylog2.plugin.system.NodeId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -47,6 +48,7 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.when;
 
+@Ignore
 public class GelfNatsOutputIT {
     @Rule
     public final MockitoRule mockitoRule = MockitoJUnit.rule();
