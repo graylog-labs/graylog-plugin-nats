@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class NatsStreamingIT {
+public class NatsStreamingIT extends BaseNatsStreamingTest {
     private static final String CLIENT_ID = "NatsStreamingIT-client";
     private static final String CHANNEL = "NatsStreamingIT";
 

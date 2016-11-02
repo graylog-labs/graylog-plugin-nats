@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.EventBus;
 import io.nats.client.Connection;
 import io.nats.client.ConnectionFactory;
+import org.graylog.plugins.nats.BaseNatsTest;
 import org.graylog.plugins.nats.NatsConstants;
 import org.graylog.plugins.nats.config.NatsConfig;
 import org.graylog2.plugin.LocalMetricRegistry;
@@ -40,7 +41,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class NatsTransportIT {
+public class NatsTransportIT extends BaseNatsTest {
     private static final String CHANNELS = "NatsTransportIT";
 
     private EventBus eventBus;

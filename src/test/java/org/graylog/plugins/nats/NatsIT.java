@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class NatsIT {
+public class NatsIT extends BaseNatsTest {
 
     private static final String CHANNEL = "NatsIT";
 

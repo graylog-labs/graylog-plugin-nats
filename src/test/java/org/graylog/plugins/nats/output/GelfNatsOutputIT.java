@@ -20,6 +20,7 @@ package org.graylog.plugins.nats.output;
 import com.google.common.collect.ImmutableMap;
 import io.nats.client.Connection;
 import io.nats.client.ConnectionFactory;
+import org.graylog.plugins.nats.BaseNatsTest;
 import org.graylog.plugins.nats.NatsConstants;
 import org.graylog.plugins.nats.config.NatsConfig;
 import org.graylog2.plugin.Message;
@@ -48,7 +49,7 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.when;
 
-public class GelfNatsOutputIT {
+public class GelfNatsOutputIT extends BaseNatsTest {
     @Rule
     public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
