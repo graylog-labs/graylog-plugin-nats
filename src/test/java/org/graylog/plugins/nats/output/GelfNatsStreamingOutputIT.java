@@ -20,6 +20,7 @@ package org.graylog.plugins.nats.output;
 import com.google.common.collect.ImmutableMap;
 import io.nats.stan.Connection;
 import io.nats.stan.ConnectionFactory;
+import org.graylog.plugins.nats.NatsConstants;
 import org.graylog.plugins.nats.config.NatsConfig;
 import org.graylog.plugins.nats.config.NatsStreamingConfig;
 import org.graylog2.plugin.Message;
@@ -53,10 +54,6 @@ public class GelfNatsStreamingOutputIT {
     @Rule
     public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    private static final String NATS_HOST = System.getProperty("nats-streaming.host", "localhost");
-    private static final int NATS_PORT = Integer.getInteger("nats-streaming.port", 4223);
-    private static final String NATS_URL = "nats://" + NATS_HOST + ":" + NATS_PORT;
-    private static final String NATS_CLUSTER_ID = "test-cluster";
     private static final String CHANNELS = "graylog";
 
     @Mock
@@ -70,9 +67,9 @@ public class GelfNatsStreamingOutputIT {
     public void setUp() throws MessageOutputConfigurationException {
         final Configuration configuration = new Configuration(
                 ImmutableMap.of(
-                        NatsConfig.CK_SERVER_URIS, NATS_URL,
+                        NatsConfig.CK_SERVER_URIS, NatsConstants.URL,
                         NatsConfig.CK_CHANNELS, CHANNELS,
-                        NatsStreamingConfig.CK_CLUSTER_ID, NATS_CLUSTER_ID,
+                        NatsStreamingConfig.CK_CLUSTER_ID, NatsConstants.CLUSTER_ID,
                         NatsStreamingConfig.CK_CLIENT_ID, "GelfNatsStreamingOutput-publisher"
                 )
 
@@ -89,8 +86,8 @@ public class GelfNatsStreamingOutputIT {
     @Test
     public void publishMessage() throws Exception {
         final List<byte[]> receivedMessages = new CopyOnWriteArrayList<>();
-        final ConnectionFactory cf = new ConnectionFactory(NATS_CLUSTER_ID, "GelfNatsStreamingOutput-consumer");
-        cf.setNatsUrl(NATS_URL);
+        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.CLUSTER_ID, "GelfNatsStreamingOutput-consumer");
+        cf.setNatsUrl(NatsConstants.URL);
         cf.setConnectTimeout(Duration.ofSeconds(5L));
 
         try (Connection nc = cf.createConnection()) {

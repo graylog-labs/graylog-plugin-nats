@@ -31,18 +31,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class NatsStreamingIT {
-    private static final String NATS_HOST = System.getProperty("nats-streaming.host", "localhost");
-    private static final int NATS_PORT = Integer.getInteger("nats-streaming.port", 4223);
-    private static final String NATS_URL = "nats://" + NATS_HOST + ":" + NATS_PORT;
-
-    private static final String CLUSTER_ID = "clusterID";
-    private static final String CLIENT_ID = "clientID";
+    private static final String CLIENT_ID = "NatsStreamingIT-client";
 
     @Test
     public void basicSubscriptionIsWorking() throws Exception {
         final CountDownLatch messageReceived = new CountDownLatch(1);
-        final ConnectionFactory cf = new ConnectionFactory(CLUSTER_ID, CLIENT_ID);
-        cf.setNatsUrl(NATS_URL);
+        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.CLUSTER_ID, CLIENT_ID);
+        cf.setNatsUrl(NatsConstants.URL);
         final AtomicReference<Message> messageReference = new AtomicReference<>();
         final byte[] messagePayload = "Hello World".getBytes(StandardCharsets.UTF_8);
         try (

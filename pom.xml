@@ -37,8 +37,8 @@
         <graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
 
         <nats-streaming.image>nats-streaming:0.3.0</nats-streaming.image>
-        <nats-streaming.client.port>4223</nats-streaming.client.port>
-        <nats-streaming.monitor.port>8223</nats-streaming.monitor.port>
+        <nats.client.port>4222</nats.client.port>
+        <nats.monitor.port>8222</nats.monitor.port>
     </properties>
 
     <dependencies>
@@ -246,23 +246,23 @@
                             <name>${nats-streaming.image}</name>
                             <run>
                                 <ports>
-                                    <port>${nats-streaming.host}:${nats-streaming.client.port}:4223</port>
-                                    <port>${nats-streaming.host}:${nats-streaming.monitor.port}:8223</port>
+                                    <port>+nats.host:nats.client.port:4222</port>
+                                    <port>+nats.host:nats.monitor.port:8222</port>
                                 </ports>
                                 <wait>
                                     <!-- The plugin waits until this URL is reachable via HTTP ... -->
                                     <log>Server startup</log>
                                     <http>
-                                        <url>http://${nats-streaming.host}:${nats-streaming.monitor.port}/</url>
+                                        <url>http://${nats.host}:${nats.monitor.port}/</url>
                                         <method>GET</method>
                                         <status>200</status>
                                     </http>
                                     <time>10000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
-                                <cmd>-p 4223 -m 8223 --debug</cmd>
+                                <cmd>-p ${nats.client.port} -m ${nats.monitor.port}</cmd>
                                 <log>
-                                    <prefix>STAN</prefix>
+                                    <prefix>NATS</prefix>
                                 </log>
                             </run>
                         </image>
@@ -290,8 +290,8 @@
                 <version>2.19.1</version>
                 <configuration>
                     <systemPropertyVariables>
-                        <nats-streaming.host>${nats-streaming.host}</nats-streaming.host>
-                        <nats-streaming.port>${nats-streaming.port}</nats-streaming.port>
+                        <nats.host>${nats.host}</nats.host>
+                        <nats.port>${nats.port}</nats.port>
                     </systemPropertyVariables>
                 </configuration>
                 <executions>

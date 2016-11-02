@@ -17,11 +17,14 @@
  */
 package org.graylog.plugins.nats;
 
-import org.junit.Test;
+import io.nats.client.ConnectionFactory;
 
-public class NatsTransportTest {
-    @Test
-    public void getFinalChannelHandlers() throws Exception {
+public final class NatsConstants {
+    public static final String HOST = System.getProperty("nats.host", ConnectionFactory.DEFAULT_HOST);
+    public static final int PORT = Integer.getInteger("nats.port", ConnectionFactory.DEFAULT_PORT);
+    public static final String URL = "nats://" + HOST + ":" + PORT;
+    public static final String CLUSTER_ID = "test-cluster";
 
+    private NatsConstants() {
     }
 }

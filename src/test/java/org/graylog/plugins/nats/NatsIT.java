@@ -20,7 +20,6 @@ package org.graylog.plugins.nats;
 import io.nats.client.Connection;
 import io.nats.client.ConnectionFactory;
 import io.nats.client.Message;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -30,16 +29,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore
 public class NatsIT {
-    private static final String NATS_HOST = System.getProperty("nats.host", ConnectionFactory.DEFAULT_HOST);
-    private static final int NATS_PORT = Integer.getInteger("nats.port", ConnectionFactory.DEFAULT_PORT);
-    private static final String NATS_URL = "nats://" + NATS_HOST + ":" + NATS_PORT;
-
     @Test
     public void basicSubscriptionIsWorking() throws Exception {
         final CountDownLatch messageReceived = new CountDownLatch(1);
-        final ConnectionFactory cf = new ConnectionFactory(NATS_URL);
+        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.URL);
         final AtomicReference<Message> messageReference = new AtomicReference<>();
         final byte[] messagePayload = "Hello World".getBytes(StandardCharsets.UTF_8);
         try (Connection nc = cf.createConnection()) {

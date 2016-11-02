@@ -20,6 +20,7 @@ package org.graylog.plugins.nats.output;
 import com.google.common.collect.ImmutableMap;
 import io.nats.client.Connection;
 import io.nats.client.ConnectionFactory;
+import org.graylog.plugins.nats.NatsConstants;
 import org.graylog.plugins.nats.config.NatsConfig;
 import org.graylog2.plugin.Message;
 import org.graylog2.plugin.ServerStatus;
@@ -29,7 +30,6 @@ import org.graylog2.plugin.system.NodeId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -48,14 +48,10 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.when;
 
-@Ignore
 public class GelfNatsOutputIT {
     @Rule
     public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    private static final String NATS_HOST = System.getProperty("nats.host", ConnectionFactory.DEFAULT_HOST);
-    private static final int NATS_PORT = Integer.getInteger("nats.port", ConnectionFactory.DEFAULT_PORT);
-    private static final String NATS_URL = "nats://" + NATS_HOST + ":" + NATS_PORT;
     private static final String CHANNELS = "graylog";
 
     @Mock
@@ -69,7 +65,7 @@ public class GelfNatsOutputIT {
     public void setUp() throws MessageOutputConfigurationException {
         final Configuration configuration = new Configuration(
                 ImmutableMap.of(
-                        NatsConfig.CK_SERVER_URIS, NATS_URL,
+                        NatsConfig.CK_SERVER_URIS, NatsConstants.URL,
                         NatsConfig.CK_CHANNELS, CHANNELS
                 )
 
@@ -86,7 +82,7 @@ public class GelfNatsOutputIT {
     @Test
     public void publishMessage() throws Exception {
         final List<byte[]> receivedMessages = new CopyOnWriteArrayList<>();
-        final ConnectionFactory cf = new ConnectionFactory(NATS_URL);
+        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.URL);
         try (Connection nc = cf.createConnection()) {
             nc.subscribe(CHANNELS, msg -> receivedMessages.add(msg.getData()));
 
