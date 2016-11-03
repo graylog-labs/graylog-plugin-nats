@@ -7,7 +7,7 @@
 
     <groupId>org.graylog.plugins</groupId>
     <artifactId>graylog-plugin-nats</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -19,7 +19,7 @@
         <connection>scm:git:git@github.com:Graylog2/graylog-plugin-nats.git</connection>
         <developerConnection>scm:git:git@github.com:Graylog2/graylog-plugin-nats.git</developerConnection>
         <url>https://github.com/Graylog2/graylog-plugin-nats</url>
-        <tag>1.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
