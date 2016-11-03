@@ -56,7 +56,7 @@ public class NatsConfig  {
                 "Channels",
                 "",
                 "List of channels (one per line)",
-                ConfigurationField.Optional.OPTIONAL,
+                ConfigurationField.Optional.NOT_OPTIONAL,
                 TextField.Attribute.TEXTAREA));
         r.addField(new TextField(
                 CK_CONNECTION_NAME,
