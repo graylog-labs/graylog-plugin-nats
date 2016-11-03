@@ -36,9 +36,12 @@
         <graylog.version>2.1.0</graylog.version>
         <graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
 
-        <nats-streaming.image>nats-streaming:0.3.0</nats-streaming.image>
+        <nats.image>nats:0.9.4</nats.image>
         <nats.client.port>4222</nats.client.port>
         <nats.monitor.port>8222</nats.monitor.port>
+        <nats-streaming.image>nats-streaming:0.3.0</nats-streaming.image>
+        <nats-streaming.client.port>4223</nats-streaming.client.port>
+        <nats-streaming.monitor.port>8223</nats-streaming.monitor.port>
     </properties>
 
     <dependencies>
@@ -239,15 +242,18 @@
                 <version>0.16.9</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <showLogs>true</showLogs>
                     <images>
                         <image>
-                            <alias>nats-streaming</alias>
-                            <name>${nats-streaming.image}</name>
+                            <alias>nats</alias>
+                            <name>${nats.image}</name>
                             <run>
+                                <log>
+                                    <prefix>NATS</prefix>
+                                </log>
+                                <cmd>-p ${nats.client.port} -m ${nats.monitor.port}</cmd>
                                 <ports>
-                                    <port>+nats.host:nats.client.port:4222</port>
-                                    <port>+nats.host:nats.monitor.port:8222</port>
+                                    <port>+nats.host:nats.port:${nats.client.port}</port>
+                                    <port>+nats.host:nats.monitor.port:${nats.monitor.port}</port>
                                 </ports>
                                 <wait>
                                     <!-- The plugin waits until this URL is reachable via HTTP ... -->
@@ -260,10 +266,32 @@
                                     <time>10000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
-                                <cmd>-p ${nats.client.port} -m ${nats.monitor.port}</cmd>
+                            </run>
+                        </image>
+                        <image>
+                            <alias>nats-streaming</alias>
+                            <name>${nats-streaming.image}</name>
+                            <run>
                                 <log>
-                                    <prefix>NATS</prefix>
+                                    <prefix>STAN</prefix>
                                 </log>
+                                <cmd>-p ${nats-streaming.client.port} -m ${nats-streaming.monitor.port}</cmd>
+                                <ports>
+                                    <port>+nats-streaming.host:nats-streaming.port:${nats-streaming.client.port}</port>
+                                    <port>+nats-streaming.host:nats-streaming.monitor.port:${nats-streaming.monitor.port}</port>
+                                </ports>
+                                <wait>
+                                    <!-- The plugin waits until this URL is reachable via HTTP ... -->
+                                    <log>Server startup</log>
+                                    <http>
+                                        <url>http://${nats-streaming.host}:${nats-streaming.monitor.port}/</url>
+                                        <method>GET</method>
+                                        <status>200</status>
+                                    </http>
+                                    <time>10000</time>
+                                    <shutdown>500</shutdown>
+                                </wait>
+                                <cmd>-p 4223 -m 8223</cmd>
                             </run>
                         </image>
                     </images>
@@ -292,6 +320,8 @@
                     <systemPropertyVariables>
                         <nats.host>${nats.host}</nats.host>
                         <nats.port>${nats.port}</nats.port>
+                        <nats-streaming.host>${nats-streaming.host}</nats-streaming.host>
+                        <nats-streaming.port>${nats-streaming.port}</nats-streaming.port>
                     </systemPropertyVariables>
                 </configuration>
                 <executions>
