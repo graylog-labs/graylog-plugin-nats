@@ -68,8 +68,7 @@ public class NatsTransportIT extends BaseNatsTest {
         cf.setConnectionName("NatsTransportIT-publisher");
 
         try (final NatsTransport natsTransport = new NatsTransport(configuration, eventBus, localMetricRegistry);
-             final Connection nc = cf.createConnection()
-        ) {
+             final Connection nc = cf.createConnection()) {
             natsTransport.launch(messageInput);
             nc.publish(CHANNELS, "TEST".getBytes(StandardCharsets.UTF_8));
 
