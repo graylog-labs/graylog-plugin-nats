@@ -37,8 +37,8 @@ public class NatsStreamingIT extends BaseNatsStreamingTest {
     @Test
     public void basicSubscriptionIsWorking() throws Exception {
         final CountDownLatch messageReceived = new CountDownLatch(1);
-        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.CLUSTER_ID, CLIENT_ID);
-        cf.setNatsUrl(NatsConstants.URL);
+        final ConnectionFactory cf = new ConnectionFactory(CLUSTER_ID, CLIENT_ID);
+        cf.setNatsUrl(URL);
         final AtomicReference<Message> messageReference = new AtomicReference<>();
         final byte[] messagePayload = "Hello World".getBytes(StandardCharsets.UTF_8);
         try (

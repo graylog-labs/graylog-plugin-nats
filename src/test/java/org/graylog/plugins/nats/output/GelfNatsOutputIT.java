@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableMap;
 import io.nats.client.Connection;
 import io.nats.client.ConnectionFactory;
 import org.graylog.plugins.nats.BaseNatsTest;
-import org.graylog.plugins.nats.NatsConstants;
 import org.graylog.plugins.nats.config.NatsConfig;
 import org.graylog2.plugin.Message;
 import org.graylog2.plugin.ServerStatus;
@@ -43,7 +42,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -67,7 +65,7 @@ public class GelfNatsOutputIT extends BaseNatsTest {
     public void setUp() throws MessageOutputConfigurationException {
         final Configuration configuration = new Configuration(
                 ImmutableMap.of(
-                        NatsConfig.CK_SERVER_URIS, NatsConstants.URL,
+                        NatsConfig.CK_SERVER_URIS, URL,
                         NatsConfig.CK_CHANNELS, CHANNELS,
                         NatsConfig.CK_CONNECTION_NAME, "GelfNatsOutputIT-publisher"
                 )
@@ -90,7 +88,7 @@ public class GelfNatsOutputIT extends BaseNatsTest {
     @Test
     public void publishMessage() throws Exception {
         final List<byte[]> receivedMessages = new CopyOnWriteArrayList<>();
-        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.URL);
+        final ConnectionFactory cf = new ConnectionFactory(URL);
         cf.setConnectionName("GelfNatsOutputIT-consumer");
         try (Connection nc = cf.createConnection()) {
             nc.subscribe(CHANNELS, msg -> receivedMessages.add(msg.getData()));
@@ -115,7 +113,7 @@ public class GelfNatsOutputIT extends BaseNatsTest {
 
             output.write(message);
 
-            await().atMost(10L, TimeUnit.SECONDS).until(() -> !receivedMessages.isEmpty());
+            await().until(() -> !receivedMessages.isEmpty());
         }
 
         final byte[] expectedMessage = ("{" +

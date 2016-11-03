@@ -17,12 +17,24 @@
  */
 package org.graylog.plugins.nats;
 
+import io.nats.client.ConnectionFactory;
+import org.awaitility.Awaitility;
 import org.junit.BeforeClass;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assume.assumeFalse;
 
 public abstract class BaseNatsTest {
-    public static boolean SKIP = Boolean.getBoolean("nats.tests.skip");
+    private static boolean SKIP = Boolean.getBoolean("nats.tests.skip");
+
+    private static final String HOST = System.getProperty("nats.host", ConnectionFactory.DEFAULT_HOST);
+    private static final int PORT = Integer.getInteger("nats.port", ConnectionFactory.DEFAULT_PORT);
+    protected static final String URL = "nats://" + HOST + ":" + PORT;
+
+    static {
+        Awaitility.setDefaultTimeout(5L, TimeUnit.SECONDS);
+    }
 
     @BeforeClass
     public static void skipTests() {

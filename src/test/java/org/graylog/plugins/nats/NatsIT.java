@@ -36,7 +36,7 @@ public class NatsIT extends BaseNatsTest {
     @Test
     public void basicSubscriptionIsWorking() throws Exception {
         final CountDownLatch messageReceived = new CountDownLatch(1);
-        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.URL);
+        final ConnectionFactory cf = new ConnectionFactory(URL);
         cf.setConnectionName("NatsIT");
         final AtomicReference<Message> messageReference = new AtomicReference<>();
         final byte[] messagePayload = "Hello World".getBytes(StandardCharsets.UTF_8);

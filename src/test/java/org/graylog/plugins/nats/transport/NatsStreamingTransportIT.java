@@ -22,7 +22,6 @@ import com.google.common.eventbus.EventBus;
 import io.nats.stan.Connection;
 import io.nats.stan.ConnectionFactory;
 import org.graylog.plugins.nats.BaseNatsStreamingTest;
-import org.graylog.plugins.nats.NatsConstants;
 import org.graylog.plugins.nats.config.NatsConfig;
 import org.graylog.plugins.nats.config.NatsStreamingConfig;
 import org.graylog2.plugin.LocalMetricRegistry;
@@ -34,7 +33,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,25 +56,26 @@ public class NatsStreamingTransportIT extends BaseNatsStreamingTest {
     public void subscribeChannel() throws Exception {
         final Configuration configuration = new Configuration(
                 ImmutableMap.of(
-                        NatsConfig.CK_SERVER_URIS, NatsConstants.URL,
+                        NatsConfig.CK_SERVER_URIS, URL,
                         NatsConfig.CK_CHANNELS, CHANNELS,
                         NatsConfig.CK_CONNECTION_NAME, "NatsStreamingTransportIT-consumer",
-                        NatsStreamingConfig.CK_CLUSTER_ID, NatsConstants.CLUSTER_ID,
+                        NatsStreamingConfig.CK_CLUSTER_ID, CLUSTER_ID,
                         NatsStreamingConfig.CK_CLIENT_ID, "NatsStreamingTransportIT-consumer"
                 )
         );
 
         final MessageInput messageInput = mock(MessageInput.class);
-        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.CLUSTER_ID, "NatsStreamingTransportIT-publisher");
-        cf.setNatsUrl(NatsConstants.URL);
+        final ConnectionFactory cf = new ConnectionFactory(CLUSTER_ID, "NatsStreamingTransportIT-publisher");
+        cf.setNatsUrl(URL);
 
         try (final NatsStreamingTransport natsTransport = new NatsStreamingTransport(configuration, eventBus, localMetricRegistry);
              final Connection nc = cf.createConnection()) {
             natsTransport.launch(messageInput);
+            await().until(natsTransport::isConnected);
+
             nc.publish(CHANNELS, "TEST".getBytes(StandardCharsets.UTF_8));
 
             await()
-                    .atMost(10L, TimeUnit.SECONDS)
                     .catchUncaughtExceptions()
                     .until(() -> verify(messageInput, times(1)).processRawMessage(any(RawMessage.class)));
         }

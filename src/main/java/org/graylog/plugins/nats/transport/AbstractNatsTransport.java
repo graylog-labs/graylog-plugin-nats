@@ -106,6 +106,10 @@ abstract class AbstractNatsTransport extends ThrottleableTransport {
         }
     }
 
+    public boolean isConnected() {
+        return connection.isConnected();
+    }
+
     @Override
     public void setMessageAggregator(CodecAggregator aggregator) {
     }

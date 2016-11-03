@@ -22,7 +22,6 @@ import com.google.common.eventbus.EventBus;
 import io.nats.client.Connection;
 import io.nats.client.ConnectionFactory;
 import org.graylog.plugins.nats.BaseNatsTest;
-import org.graylog.plugins.nats.NatsConstants;
 import org.graylog.plugins.nats.config.NatsConfig;
 import org.graylog2.plugin.LocalMetricRegistry;
 import org.graylog2.plugin.configuration.Configuration;
@@ -33,7 +32,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
@@ -57,23 +55,24 @@ public class NatsTransportIT extends BaseNatsTest {
     public void subscribeChannel() throws Exception {
         final Configuration configuration = new Configuration(
                 ImmutableMap.of(
-                        NatsConfig.CK_SERVER_URIS, NatsConstants.URL,
+                        NatsConfig.CK_SERVER_URIS, URL,
                         NatsConfig.CK_CHANNELS, CHANNELS,
                         NatsConfig.CK_CONNECTION_NAME, "NatsTransportIT-consumer"
                 )
         );
 
         final MessageInput messageInput = mock(MessageInput.class);
-        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.URL);
+        final ConnectionFactory cf = new ConnectionFactory(URL);
         cf.setConnectionName("NatsTransportIT-publisher");
 
         try (final NatsTransport natsTransport = new NatsTransport(configuration, eventBus, localMetricRegistry);
              final Connection nc = cf.createConnection()) {
             natsTransport.launch(messageInput);
+            await().until(natsTransport::isConnected);
+
             nc.publish(CHANNELS, "TEST".getBytes(StandardCharsets.UTF_8));
 
             await()
-                    .atMost(10L, TimeUnit.SECONDS)
                     .catchUncaughtExceptions()
                     .until(() -> verify(messageInput, times(1)).processRawMessage(any(RawMessage.class)));
         }

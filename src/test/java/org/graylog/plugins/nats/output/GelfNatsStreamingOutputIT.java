@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableMap;
 import io.nats.stan.Connection;
 import io.nats.stan.ConnectionFactory;
 import org.graylog.plugins.nats.BaseNatsStreamingTest;
-import org.graylog.plugins.nats.NatsConstants;
 import org.graylog.plugins.nats.config.NatsConfig;
 import org.graylog.plugins.nats.config.NatsStreamingConfig;
 import org.graylog2.plugin.Message;
@@ -45,7 +44,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -69,10 +67,10 @@ public class GelfNatsStreamingOutputIT extends BaseNatsStreamingTest {
     public void setUp() throws MessageOutputConfigurationException {
         final Configuration configuration = new Configuration(
                 ImmutableMap.of(
-                        NatsConfig.CK_SERVER_URIS, NatsConstants.URL,
+                        NatsConfig.CK_SERVER_URIS, URL,
                         NatsConfig.CK_CHANNELS, CHANNELS,
                         NatsConfig.CK_CONNECTION_NAME, "GelfNatsStreamingOutputIT-publisher",
-                        NatsStreamingConfig.CK_CLUSTER_ID, NatsConstants.CLUSTER_ID,
+                        NatsStreamingConfig.CK_CLUSTER_ID, CLUSTER_ID,
                         NatsStreamingConfig.CK_CLIENT_ID, "GelfNatsStreamingOutputIT-publisher"
                 )
 
@@ -94,8 +92,8 @@ public class GelfNatsStreamingOutputIT extends BaseNatsStreamingTest {
     @Test
     public void publishMessage() throws Exception {
         final List<byte[]> receivedMessages = new CopyOnWriteArrayList<>();
-        final ConnectionFactory cf = new ConnectionFactory(NatsConstants.CLUSTER_ID, "GelfNatsStreamingOutputIT-consumer");
-        cf.setNatsUrl(NatsConstants.URL);
+        final ConnectionFactory cf = new ConnectionFactory(CLUSTER_ID, "GelfNatsStreamingOutputIT-consumer");
+        cf.setNatsUrl(URL);
         cf.setConnectTimeout(Duration.ofSeconds(5L));
 
         try (Connection nc = cf.createConnection()) {
@@ -121,7 +119,7 @@ public class GelfNatsStreamingOutputIT extends BaseNatsStreamingTest {
 
             output.write(message);
 
-            await().atMost(10L, TimeUnit.SECONDS).until(() -> !receivedMessages.isEmpty());
+            await().until(() -> !receivedMessages.isEmpty());
         }
 
         final byte[] expectedMessage = ("{" +
