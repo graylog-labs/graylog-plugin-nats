@@ -21,7 +21,6 @@ import io.nats.stan.Connection;
 import io.nats.stan.ConnectionFactory;
 import io.nats.stan.Message;
 import io.nats.stan.Subscription;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -31,30 +30,25 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore
-public class NatsStreamingIT {
-    private static final String NATS_HOST = System.getProperty("nats.host", "localhost");
-    private static final int NATS_PORT = Integer.getInteger("nats.port", 4222);
-    private static final String NATS_URL = "nats://" + NATS_HOST + ":" + NATS_PORT;
-
-    private static final String CLUSTER_ID = "clusterID";
-    private static final String CLIENT_ID = "clientID";
+public class NatsStreamingIT extends BaseNatsStreamingTest {
+    private static final String CLIENT_ID = "NatsStreamingIT-client";
+    private static final String CHANNEL = "NatsStreamingIT";
 
     @Test
     public void basicSubscriptionIsWorking() throws Exception {
         final CountDownLatch messageReceived = new CountDownLatch(1);
         final ConnectionFactory cf = new ConnectionFactory(CLUSTER_ID, CLIENT_ID);
-        cf.setNatsUrl(NATS_URL);
+        cf.setNatsUrl(URL);
         final AtomicReference<Message> messageReference = new AtomicReference<>();
         final byte[] messagePayload = "Hello World".getBytes(StandardCharsets.UTF_8);
         try (
                 final Connection sc = cf.createConnection();
-                final Subscription sub = sc.subscribe("foo", m -> {
+                final Subscription sub = sc.subscribe(CHANNEL, m -> {
                     messageReference.set(m);
                     messageReceived.countDown();
                 })
         ) {
-            sc.publish("foo", messagePayload);
+            sc.publish(CHANNEL, messagePayload);
 
             messageReceived.await(1L, TimeUnit.SECONDS);
         }

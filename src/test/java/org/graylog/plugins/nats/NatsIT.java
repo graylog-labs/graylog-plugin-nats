@@ -29,24 +29,24 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class NatsIT {
-    private static final String NATS_HOST = System.getProperty("nats.host", ConnectionFactory.DEFAULT_HOST);
-    private static final int NATS_PORT = Integer.getInteger("nats.port", ConnectionFactory.DEFAULT_PORT);
-    private static final String NATS_URL = "nats://" + NATS_HOST + ":" + NATS_PORT;
+public class NatsIT extends BaseNatsTest {
+
+    private static final String CHANNEL = "NatsIT";
 
     @Test
     public void basicSubscriptionIsWorking() throws Exception {
         final CountDownLatch messageReceived = new CountDownLatch(1);
-        final ConnectionFactory cf = new ConnectionFactory(NATS_URL);
+        final ConnectionFactory cf = new ConnectionFactory(URL);
+        cf.setConnectionName("NatsIT");
         final AtomicReference<Message> messageReference = new AtomicReference<>();
         final byte[] messagePayload = "Hello World".getBytes(StandardCharsets.UTF_8);
         try (Connection nc = cf.createConnection()) {
-            nc.subscribe("foo", m -> {
+            nc.subscribe(CHANNEL, m -> {
                 messageReference.set(m);
                 messageReceived.countDown();
             });
 
-            nc.publish("foo", messagePayload);
+            nc.publish(CHANNEL, messagePayload);
 
             messageReceived.await(1L, TimeUnit.SECONDS);
         }

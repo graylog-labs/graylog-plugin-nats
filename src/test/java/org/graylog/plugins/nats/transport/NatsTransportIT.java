@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.EventBus;
 import io.nats.client.Connection;
 import io.nats.client.ConnectionFactory;
+import org.graylog.plugins.nats.BaseNatsTest;
 import org.graylog.plugins.nats.config.NatsConfig;
 import org.graylog2.plugin.LocalMetricRegistry;
 import org.graylog2.plugin.configuration.Configuration;
@@ -28,13 +29,9 @@ import org.graylog2.plugin.inputs.MessageInput;
 import org.graylog2.plugin.journal.RawMessage;
 import org.graylog2.plugin.outputs.MessageOutputConfigurationException;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,14 +39,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class NatsTransportIT {
-    @Rule
-    public final MockitoRule mockitoRule = MockitoJUnit.rule();
-
-    private static final String NATS_HOST = System.getProperty("nats.host", ConnectionFactory.DEFAULT_HOST);
-    private static final int NATS_PORT = Integer.getInteger("nats.port", ConnectionFactory.DEFAULT_PORT);
-    private static final String NATS_URL = "nats://" + NATS_HOST + ":" + NATS_PORT;
-    private static final String CHANNELS = "graylog";
+public class NatsTransportIT extends BaseNatsTest {
+    private static final String CHANNELS = "NatsTransportIT";
 
     private EventBus eventBus;
     private LocalMetricRegistry localMetricRegistry;
@@ -64,25 +55,26 @@ public class NatsTransportIT {
     public void subscribeChannel() throws Exception {
         final Configuration configuration = new Configuration(
                 ImmutableMap.of(
-                        NatsConfig.CK_SERVER_URIS, NATS_URL,
-                        NatsConfig.CK_CHANNELS, CHANNELS
+                        NatsConfig.CK_SERVER_URIS, URL,
+                        NatsConfig.CK_CHANNELS, CHANNELS,
+                        NatsConfig.CK_CONNECTION_NAME, "NatsTransportIT-consumer"
                 )
         );
 
-        final NatsTransport natsTransport = new NatsTransport(configuration, eventBus, localMetricRegistry);
         final MessageInput messageInput = mock(MessageInput.class);
-        natsTransport.launch(messageInput);
+        final ConnectionFactory cf = new ConnectionFactory(URL);
+        cf.setConnectionName("NatsTransportIT-publisher");
 
-        final ConnectionFactory cf = new ConnectionFactory(NATS_URL);
-        try (Connection nc = cf.createConnection()) {
+        try (final NatsTransport natsTransport = new NatsTransport(configuration, eventBus, localMetricRegistry);
+             final Connection nc = cf.createConnection()) {
+            natsTransport.launch(messageInput);
+            await().until(natsTransport::isConnected);
+
             nc.publish(CHANNELS, "TEST".getBytes(StandardCharsets.UTF_8));
+
+            await()
+                    .catchUncaughtExceptions()
+                    .until(() -> verify(messageInput, times(1)).processRawMessage(any(RawMessage.class)));
         }
-
-        await()
-                .atMost(10L, TimeUnit.SECONDS)
-                .catchUncaughtExceptions()
-                .until(() -> verify(messageInput, times(1)).processRawMessage(any(RawMessage.class)));
-
-        natsTransport.stop();
     }
 }

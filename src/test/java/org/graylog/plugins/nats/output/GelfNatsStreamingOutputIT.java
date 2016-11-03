@@ -20,6 +20,7 @@ package org.graylog.plugins.nats.output;
 import com.google.common.collect.ImmutableMap;
 import io.nats.stan.Connection;
 import io.nats.stan.ConnectionFactory;
+import org.graylog.plugins.nats.BaseNatsStreamingTest;
 import org.graylog.plugins.nats.config.NatsConfig;
 import org.graylog.plugins.nats.config.NatsStreamingConfig;
 import org.graylog2.plugin.Message;
@@ -29,6 +30,7 @@ import org.graylog2.plugin.outputs.MessageOutputConfigurationException;
 import org.graylog2.plugin.system.NodeId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,22 +44,17 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.when;
 
-public class GelfNatsStreamingOutputIT {
+public class GelfNatsStreamingOutputIT extends BaseNatsStreamingTest {
     @Rule
     public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    private static final String NATS_HOST = System.getProperty("nats.host", "localhost");
-    private static final int NATS_PORT = Integer.getInteger("nats.port", 4223);
-    private static final String NATS_URL = "nats://" + NATS_HOST + ":" + NATS_PORT;
-    private static final String NATS_CLUSTER_ID = "test-cluster";
-    private static final String CHANNELS = "graylog";
+    private static final String CHANNELS = "GelfNatsStreamingOutputIT";
 
     @Mock
     private NodeId nodeId;
@@ -70,10 +67,11 @@ public class GelfNatsStreamingOutputIT {
     public void setUp() throws MessageOutputConfigurationException {
         final Configuration configuration = new Configuration(
                 ImmutableMap.of(
-                        NatsConfig.CK_SERVER_URIS, NATS_URL,
+                        NatsConfig.CK_SERVER_URIS, URL,
                         NatsConfig.CK_CHANNELS, CHANNELS,
-                        NatsStreamingConfig.CK_CLUSTER_ID, NATS_CLUSTER_ID,
-                        NatsStreamingConfig.CK_CLIENT_ID, "GelfNatsStreamingOutput-publisher"
+                        NatsConfig.CK_CONNECTION_NAME, "GelfNatsStreamingOutputIT-publisher",
+                        NatsStreamingConfig.CK_CLUSTER_ID, CLUSTER_ID,
+                        NatsStreamingConfig.CK_CLIENT_ID, "GelfNatsStreamingOutputIT-publisher"
                 )
 
         );
@@ -86,11 +84,16 @@ public class GelfNatsStreamingOutputIT {
         assumeTrue(output.isRunning());
     }
 
+    @After
+    public void tearDown() {
+        output.stop();
+    }
+
     @Test
     public void publishMessage() throws Exception {
         final List<byte[]> receivedMessages = new CopyOnWriteArrayList<>();
-        final ConnectionFactory cf = new ConnectionFactory(NATS_CLUSTER_ID, "GelfNatsStreamingOutput-consumer");
-        cf.setNatsUrl(NATS_URL);
+        final ConnectionFactory cf = new ConnectionFactory(CLUSTER_ID, "GelfNatsStreamingOutputIT-consumer");
+        cf.setNatsUrl(URL);
         cf.setConnectTimeout(Duration.ofSeconds(5L));
 
         try (Connection nc = cf.createConnection()) {
@@ -116,7 +119,7 @@ public class GelfNatsStreamingOutputIT {
 
             output.write(message);
 
-            await().atMost(10L, TimeUnit.SECONDS).until(() -> !receivedMessages.isEmpty());
+            await().until(() -> !receivedMessages.isEmpty());
         }
 
         final byte[] expectedMessage = ("{" +

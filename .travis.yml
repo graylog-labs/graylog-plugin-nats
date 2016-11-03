@@ -1,5 +1,6 @@
 sudo: required
 dist: trusty
+group: beta
 language: java
 jdk:
   - oraclejdk8
@@ -7,6 +8,9 @@ addons:
   apt:
     packages:
       - rpm
+cache:
+  directories:
+    - $HOME/.m2
 services:
   - docker
 script:

@@ -35,13 +35,14 @@ import org.graylog2.plugin.inputs.transports.Transport;
 import org.graylog2.plugin.journal.RawMessage;
 
 import javax.inject.Inject;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class NatsStreamingTransport extends AbstractNatsTransport {
+public class NatsStreamingTransport extends AbstractNatsTransport implements Closeable {
     private final Set<Subscription> subscriptions = new HashSet<>();
     private Connection streamingConnection;
 
@@ -102,6 +103,11 @@ public class NatsStreamingTransport extends AbstractNatsTransport {
         }
 
         super.doStop();
+    }
+
+    @Override
+    public void close() throws IOException {
+        stop();
     }
 
     @FactoryClass

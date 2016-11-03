@@ -48,12 +48,12 @@
         <dependency>
             <groupId>io.nats</groupId>
             <artifactId>jnats</artifactId>
-            <version>0.5.3</version>
+            <version>0.7.3</version>
         </dependency>
         <dependency>
             <groupId>io.nats</groupId>
             <artifactId>java-nats-streaming</artifactId>
-            <version>0.3.0</version>
+            <version>0.4.1</version>
         </dependency>
         <dependency>
             <groupId>org.graylog2</groupId>
@@ -247,9 +247,13 @@
                             <alias>nats</alias>
                             <name>${nats.image}</name>
                             <run>
+                                <log>
+                                    <prefix>NATS</prefix>
+                                </log>
+                                <cmd>-p ${nats.client.port} -m ${nats.monitor.port}</cmd>
                                 <ports>
-                                    <port>${nats.host}:${nats.client.port}:4222</port>
-                                    <port>${nats.host}:${nats.monitor.port}:8222</port>
+                                    <port>+nats.host:nats.port:${nats.client.port}</port>
+                                    <port>+nats.host:nats.monitor.port:${nats.monitor.port}</port>
                                 </ports>
                                 <wait>
                                     <!-- The plugin waits until this URL is reachable via HTTP ... -->
@@ -268,9 +272,13 @@
                             <alias>nats-streaming</alias>
                             <name>${nats-streaming.image}</name>
                             <run>
+                                <log>
+                                    <prefix>STAN</prefix>
+                                </log>
+                                <cmd>-p ${nats-streaming.client.port} -m ${nats-streaming.monitor.port}</cmd>
                                 <ports>
-                                    <port>${nats-streaming.host}:${nats-streaming.client.port}:4223</port>
-                                    <port>${nats-streaming.host}:${nats-streaming.monitor.port}:8223</port>
+                                    <port>+nats-streaming.host:nats-streaming.port:${nats-streaming.client.port}</port>
+                                    <port>+nats-streaming.host:nats-streaming.monitor.port:${nats-streaming.monitor.port}</port>
                                 </ports>
                                 <wait>
                                     <!-- The plugin waits until this URL is reachable via HTTP ... -->
@@ -312,6 +320,8 @@
                     <systemPropertyVariables>
                         <nats.host>${nats.host}</nats.host>
                         <nats.port>${nats.port}</nats.port>
+                        <nats-streaming.host>${nats-streaming.host}</nats-streaming.host>
+                        <nats-streaming.port>${nats-streaming.port}</nats-streaming.port>
                     </systemPropertyVariables>
                 </configuration>
                 <executions>
