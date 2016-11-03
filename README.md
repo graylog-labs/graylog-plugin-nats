@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/Graylog2/graylog-plugin-nats.svg?branch=master)](https://travis-ci.org/Graylog2/graylog-plugin-nats)
 
-**Required Graylog version:** 2.0.0 and later
+**Required Graylog version:** 2.1.0 and later
 
 This plugin provides inputs and outputs for the [NATS protocol](http://nats.io/) in Graylog which can be used to consume data from a NATS broker, like [gnatsd](https://github.com/nats-io/gnatsd).
 
