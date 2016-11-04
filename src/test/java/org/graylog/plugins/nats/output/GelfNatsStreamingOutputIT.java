@@ -117,6 +117,8 @@ public class GelfNatsStreamingOutputIT extends BaseNatsStreamingTest {
                     .build();
             final Message message = new Message(messageFields);
 
+            await().until(() -> output.isConnected() && nc.getNatsConnection().isConnected());
+
             output.write(message);
 
             await().until(() -> !receivedMessages.isEmpty());

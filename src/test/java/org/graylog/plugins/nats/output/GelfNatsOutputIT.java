@@ -111,6 +111,8 @@ public class GelfNatsOutputIT extends BaseNatsTest {
                     .build();
             final Message message = new Message(messageFields);
 
+            await().until(() -> output.isConnected() && nc.isConnected());
+
             output.write(message);
 
             await().until(() -> !receivedMessages.isEmpty());

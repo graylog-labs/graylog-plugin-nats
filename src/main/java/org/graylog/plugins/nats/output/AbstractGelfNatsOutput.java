@@ -143,6 +143,11 @@ abstract class AbstractGelfNatsOutput implements MessageOutput {
         return isRunning.get();
     }
 
+    @VisibleForTesting
+    boolean isConnected() {
+        return connection.isConnected();
+    }
+
     @Override
     public void write(List<Message> messages) throws Exception {
         for (Message message : messages) {
