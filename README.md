@@ -1,6 +1,8 @@
 # NATS Plugin for Graylog
 
-[![Build Status](https://travis-ci.org/Graylog2/graylog-plugin-nats.svg?branch=master)](https://travis-ci.org/Graylog2/graylog-plugin-nats)
+[![Github Downloads](https://img.shields.io/github/downloads/graylog-labs/graylog-plugin-nats/total.svg)](https://github.com/graylog-labs/graylog-plugin-nats/releases)
+[![GitHub Release](https://img.shields.io/github/release/graylog-labs/graylog-plugin-nats.svg)](https://github.com/graylog-labs/graylog-plugin-nats/releases)
+[![Build Status](https://travis-ci.org/graylog-labs/graylog-plugin-nats.svg?branch=master)](https://travis-ci.org/graylog-labs/graylog-plugin-nats)
 
 **Required Graylog version:** 2.1.0 and later
 
@@ -9,7 +11,7 @@ This plugin provides inputs and outputs for the [NATS protocol](http://nats.io/)
 
 ## Installation
 
-[Download the plugin](https://github.com/Graylog2/graylog-plugin-nats/releases) and place the JAR file in your Graylog plugin directory.
+[Download the plugin](https://github.com/graylog-labs/graylog-plugin-nats/releases) and place the JAR file in your Graylog plugin directory.
 By default the plugin directory is the `plugins/` directory relative to your Graylog installation directory and can be configured in your `graylog.conf` file.
 
 Restart Graylog and you are done.
